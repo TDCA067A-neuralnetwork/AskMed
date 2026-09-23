@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinical Q&A</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="badge">AI • NEURAL NETWORK • MEDICAL LLM</div>
+    <h1>Clinical Question<br><span>Answering System</span></h1>
+    <p class="lead">
+      Ask questions about medicine, clinical care, diseases, symptoms,
+      medicines and healthcare.
+    </p>
+  </header>
+
+  <div class="warning">
+    <b>Educational prototype:</b> This system does not diagnose patients
+    and does not replace a qualified healthcare professional.
+  </div>
+
+  <main class="panel">
+    <label for="question">Your clinical question</label>
+    <textarea id="question" placeholder="e.g. What are the symptoms of pneumonia?"></textarea>
+
+    <div class="chips">
+      <button class="chip">What is hypertension?</button>
+      <button class="chip">What are symptoms of asthma?</button>
+      <button class="chip">What is an ECG?</button>
+    </div>
+
+    <div class="buttons">
+      <button id="ask" class="primary">Ask Clinical AI</button>
+      <button id="clear" class="secondary">Clear</button>
+    </div>
+
+    <div id="status"></div>
+
+    <article id="answer" class="answer hidden">
+      <div class="answer-title">Clinical AI Response</div>
+      <div id="answerText"></div>
+    </article>
+  </main>
+
+  <section class="how">
+    <h2>How the system works</h2>
+    <div class="steps">
+      <div><b>01</b><span>Input validation</span></div>
+      <div><b>02</b><span>Neural medical classifier</span></div>
+      <div><b>03</b><span>Medical LLM</span></div>
+      <div><b>04</b><span>Safety response</span></div>
+    </div>
+  </section>
+
+  <footer>TYBCA Neural Network Project • Clinical Q&A</footer>
+</div>
+<script src="/static/script.js"></script>
+</body>
+</html>
