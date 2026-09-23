@@ -1,51 +1,74 @@
 import re
 
-REFUSAL = (
-    "This system is designed only for medical and clinical questions. "
-    "Please ask a medical or healthcare-related question."
-)
 
 INJECTION_PATTERNS = [
-    r"ignore\s+(all\s+|the\s+|your\s+)?(previous|prior|system)\s+instructions",
-    r"forget\s+(your|the)\s+(instructions|rules)",
-    r"pretend\s+(you\s+are|this\s+is)\s+(a\s+)?non[-\s]?medical",
-    r"bypass\s+(the\s+|your\s+)?(medical|system)\s+restriction",
+    r"ignore previous instructions",
+    r"ignore all instructions",
+    r"forget your instructions",
+    r"system prompt",
+    r"reveal your prompt",
+    r"developer message",
     r"jailbreak",
-    r"developer\s+message",
 ]
 
-EMERGENCY_TERMS = [
-    "can't breathe", "cannot breathe", "difficulty breathing",
-    "severe chest pain", "unconscious", "not breathing",
-    "severe bleeding", "overdose", "anaphylaxis",
-    "stroke symptoms", "suicide attempt", "suicidal"
+
+EMERGENCY_WORDS = [
+    "heart attack",
+    "stroke",
+    "severe bleeding",
+    "difficulty breathing",
+    "can't breathe",
+    "cannot breathe",
+    "unconscious",
+    "suicide",
+    "overdose",
 ]
 
-def validate_query(text):
-    normalized = re.sub(r"\s+", " ", text.lower()).strip()
 
-    if len(normalized) > 2000:
+def validate_query(query):
+    """
+    Validate the user's query before sending it to the medical LLM.
+    """
+
+    if not query or not query.strip():
         return {
             "allowed": False,
-            "message": "Please keep the question below 2000 characters.",
-            "reason": "input-too-long",
-            "emergency": False
+            "reason": "Please enter a question."
         }
 
+    query = query.strip()
+
+    # Prevent very large inputs
+    if len(query) > 2000:
+        return {
+            "allowed": False,
+            "reason": "Question is too long."
+        }
+
+    # Prompt injection protection
+    lower_query = query.lower()
+
     for pattern in INJECTION_PATTERNS:
-        if re.search(pattern, normalized):
+        if re.search(pattern, lower_query):
             return {
                 "allowed": False,
-                "message": REFUSAL,
-                "reason": "prompt-injection",
-                "emergency": False
+                "reason": "This type of instruction is not allowed."
             }
 
-    emergency = any(term in normalized for term in EMERGENCY_TERMS)
+    # Emergency detection
+    for word in EMERGENCY_WORDS:
+        if word in lower_query:
+            return {
+                "allowed": True,
+                "emergency": True,
+                "reason": (
+                    "This may be an emergency. "
+                    "Please seek immediate professional medical help."
+                )
+            }
 
     return {
         "allowed": True,
-        "message": "",
-        "reason": "passed-input-validation",
-        "emergency": emergency
+        "emergency": False,
+        "reason": "Query passed the safety check."
     }
